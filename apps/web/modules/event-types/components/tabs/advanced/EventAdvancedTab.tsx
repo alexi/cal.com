@@ -53,7 +53,7 @@ import classNames from "@calcom/ui/classNames";
 import { Alert } from "@calcom/ui/components/alert";
 import { Badge } from "@calcom/ui/components/badge";
 import { Button } from "@calcom/ui/components/button";
-import { RadioArea, RadioAreaGroup } from "@calcom/ui/components/radio/RadioAreaGroup";
+import { RadioAreaGroup as RadioArea } from "@calcom/ui/components/radio";
 import {
   SelectField,
   ColorPicker,
@@ -1504,28 +1504,28 @@ export const EventAdvancedTab = ({
                   {t("round_robin_reschedule_action_description")}
                 </p>
               </div>
-              <RadioAreaGroup value={value} onValueChange={onChange} className="space-y-2">
-                <RadioArea value="RESCHEDULE_WITH_ANY_HOST">
+              <RadioArea.Group value={value} onValueChange={onChange} className="space-y-2">
+                <RadioArea.Item value="RESCHEDULE_WITH_ANY_HOST">
                   <span className="text-emphasis text-sm font-medium">
                     {t("reschedule_with_any_host")}
                   </span>
                   <p className="text-default mt-0.5 text-sm">
                     {t("reschedule_with_any_host_description")}
                   </p>
-                </RadioArea>
-                <RadioArea value="RESCHEDULE_WITH_SAME_HOST">
+                </RadioArea.Item>
+                <RadioArea.Item value="RESCHEDULE_WITH_SAME_HOST">
                   <span className="text-emphasis text-sm font-medium">
                     {t("reschedule_with_same_host")}
                   </span>
                   <p className="text-default mt-0.5 text-sm">
                     {t("reschedule_with_same_host_description")}
                   </p>
-                </RadioArea>
-                <RadioArea value="ATTENDEE_DECIDES">
+                </RadioArea.Item>
+                <RadioArea.Item value="ATTENDEE_DECIDES">
                   <span className="text-emphasis text-sm font-medium">{t("attendee_decides")}</span>
                   <p className="text-default mt-0.5 text-sm">{t("attendee_decides_description")}</p>
-                </RadioArea>
-              </RadioAreaGroup>
+                </RadioArea.Item>
+              </RadioArea.Group>
             </div>
           )}
         />
