@@ -234,4 +234,8 @@ export const ZUpdateInputSchema = BaseEventTypeUpdateInput.superRefine((data, _c
     data.aiPhoneCallConfig.guestEmail = data.aiPhoneCallConfig.guestEmail ?? null;
     data.aiPhoneCallConfig.guestCompany = data.aiPhoneCallConfig.guestCompany ?? null;
   }
+  if (data.roundRobinRescheduleAction) {
+    data.rescheduleWithSameRoundRobinHost =
+      data.roundRobinRescheduleAction === "RESCHEDULE_WITH_SAME_HOST";
+  }
 });

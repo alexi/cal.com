@@ -53,6 +53,7 @@ import classNames from "@calcom/ui/classNames";
 import { Alert } from "@calcom/ui/components/alert";
 import { Badge } from "@calcom/ui/components/badge";
 import { Button } from "@calcom/ui/components/button";
+import { RadioArea, RadioAreaGroup } from "@calcom/ui/components/radio/RadioAreaGroup";
 import {
   SelectField,
   ColorPicker,
@@ -1480,21 +1481,52 @@ export const EventAdvancedTab = ({
       />
       {isRoundRobinEventType && (
         <Controller
-          name="rescheduleWithSameRoundRobinHost"
+          name="roundRobinRescheduleAction"
           render={({ field: { value, onChange } }) => (
-            <SettingsToggle
-              labelClassName={classNames("text-sm", customClassNames?.roundRobinReschedule?.label)}
-              toggleSwitchAtTheEnd={true}
-              switchContainerClassName={classNames(
+            <div
+              className={classNames(
                 "border-subtle rounded-lg border py-6 px-4 sm:px-6",
                 customClassNames?.roundRobinReschedule?.container
-              )}
-              title={t("reschedule_with_same_round_robin_host_title")}
-              description={t("reschedule_with_same_round_robin_host_description")}
-              descriptionClassName={customClassNames?.roundRobinReschedule?.description}
-              checked={value}
-              onCheckedChange={(e) => onChange(e)}
-            />
+              )}>
+              <div className="mb-4">
+                <h2
+                  className={classNames(
+                    "text-emphasis text-sm font-semibold leading-none",
+                    customClassNames?.roundRobinReschedule?.label
+                  )}>
+                  {t("round_robin_reschedule_action_title")}
+                </h2>
+                <p
+                  className={classNames(
+                    "text-default mt-2 text-sm leading-normal",
+                    customClassNames?.roundRobinReschedule?.description
+                  )}>
+                  {t("round_robin_reschedule_action_description")}
+                </p>
+              </div>
+              <RadioAreaGroup value={value} onValueChange={onChange} className="space-y-2">
+                <RadioArea value="RESCHEDULE_WITH_ANY_HOST">
+                  <span className="text-emphasis text-sm font-medium">
+                    {t("reschedule_with_any_host")}
+                  </span>
+                  <p className="text-default mt-0.5 text-sm">
+                    {t("reschedule_with_any_host_description")}
+                  </p>
+                </RadioArea>
+                <RadioArea value="RESCHEDULE_WITH_SAME_HOST">
+                  <span className="text-emphasis text-sm font-medium">
+                    {t("reschedule_with_same_host")}
+                  </span>
+                  <p className="text-default mt-0.5 text-sm">
+                    {t("reschedule_with_same_host_description")}
+                  </p>
+                </RadioArea>
+                <RadioArea value="ATTENDEE_DECIDES">
+                  <span className="text-emphasis text-sm font-medium">{t("attendee_decides")}</span>
+                  <p className="text-default mt-0.5 text-sm">{t("attendee_decides_description")}</p>
+                </RadioArea>
+              </RadioAreaGroup>
+            </div>
           )}
         />
       )}

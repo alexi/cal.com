@@ -33,6 +33,7 @@ export type BookingOptions = {
   isDryRunProp?: boolean;
   verificationCode?: string;
   rrHostSubsetIds?: number[];
+  rescheduleWithSameHost?: boolean;
 };
 
 export const mapBookingToMutationInput = ({
@@ -58,6 +59,7 @@ export const mapBookingToMutationInput = ({
   isDryRunProp,
   verificationCode,
   rrHostSubsetIds,
+  rescheduleWithSameHost,
 }: BookingOptions): BookingCreateBody => {
   const searchParams = new URLSearchParams(routingFormSearchParams ?? window.location.search);
   const routedTeamMemberIds = getRoutedTeamMemberIdsFromSearchParams(searchParams);
@@ -101,6 +103,7 @@ export const mapBookingToMutationInput = ({
     _isDryRun,
     dub_id,
     verificationCode,
+    rescheduleWithSameHost,
   };
 };
 

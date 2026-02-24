@@ -397,6 +397,8 @@ export type BookerStore = {
   bookingUid: string | null;
   bookingData: GetBookingType | null;
   setBookingData: (bookingData: GetBookingType | null | undefined) => void;
+  rescheduleWithSameHost: boolean | null;
+  setRescheduleWithSameHost: (value: boolean | null) => void;
 
   /**
    * Method called by booker component to set initial data.
@@ -697,6 +699,10 @@ export const createBookerStore = () =>
     rescheduleUid: null,
     bookingData: null,
     bookingUid: null,
+    rescheduleWithSameHost: null,
+    setRescheduleWithSameHost: (value: boolean | null) => {
+      set({ rescheduleWithSameHost: value });
+    },
     selectedTimeslot: getQueryParam("slot") || null,
     tentativeSelectedTimeslots: [],
     setTentativeSelectedTimeslots: (tentativeSelectedTimeslots: string[]) => {

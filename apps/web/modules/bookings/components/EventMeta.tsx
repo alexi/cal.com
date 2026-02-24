@@ -11,6 +11,8 @@ import { markdownToSafeHTMLClient } from "@calcom/lib/markdownToSafeHTMLClient";
 import { CURRENT_TIMEZONE } from "@calcom/lib/timezoneConstants";
 import type { EventTypeTranslation } from "@calcom/prisma/client";
 import { EventTypeAutoTranslatedField } from "@calcom/prisma/enums";
+import classNames from "@calcom/ui/classNames";
+import { RadioArea, RadioAreaGroup } from "@calcom/ui/components/radio/RadioAreaGroup";
 import { EventMetaBlock } from "@calcom/web/modules/bookings/components/event-meta/Details";
 import { SeatsAvailabilityText } from "@calcom/web/modules/bookings/components/SeatsAvailabilityText";
 import { m } from "framer-motion";
@@ -80,6 +82,7 @@ export const EventMeta = ({
     | "fieldTranslations"
     | "autoTranslateDescriptionEnabled"
     | "enablePerHostLocations"
+    | "roundRobinRescheduleAction"
   > | null;
   isPending: boolean;
   isPrivateLink: boolean;
@@ -206,6 +209,10 @@ export const EventMeta = ({
                 </span>
               </EventMetaBlock>
             )}
+            {rescheduleUid &&
+              event?.roundRobinRescheduleAction === "ATTENDEE_DECIDES" && (
+                <RescheduleHostPreference />
+              )}
             {selectedTimeslot && (
               <EventMetaBlock icon="calendar">
                 <FromToTime
@@ -277,3 +284,32 @@ export const EventMeta = ({
     </div>
   );
 };
+
+function RescheduleHostPreference() {
+  const { t } = useLocale();
+  const rescheduleWithSameHost = useBookerStoreContext((state) => state.rescheduleWithSameHost);
+  const setRescheduleWithSameHost = useBookerStoreContext((state) => state.setRescheduleWithSameHost);
+
+  const value = rescheduleWithSameHost === true ? "same" : "any";
+
+  return (
+    <div className="mt-4 mb-2" data-testid="reschedule-host-preference">
+      <p className="text-default mb-2 text-sm font-semibold">{t("reschedule_host_preference")}</p>
+      <RadioAreaGroup
+        value={value}
+        onValueChange={(val: string) => setRescheduleWithSameHost(val === "same")}
+        className="space-y-2">
+        <RadioArea value="any" className="!rounded-lg !p-0">
+          <span className="text-emphasis text-sm font-medium">{t("reschedule_any_host")}</span>
+          <p className="text-default mt-0.5 text-xs">{t("reschedule_any_host_description")}</p>
+        </RadioArea>
+        <RadioArea value="same" className="!rounded-lg !p-0">
+          <span className="text-emphasis text-sm font-medium">{t("reschedule_keep_same_host")}</span>
+          <p className="text-default mt-0.5 text-xs">
+            {t("reschedule_keep_same_host_description", { name: "" }).replace(/\(.*\)/, "(limited availability)")}
+          </p>
+        </RadioArea>
+      </RadioAreaGroup>
+    </div>
+  );
+}
