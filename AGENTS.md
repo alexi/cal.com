@@ -242,3 +242,46 @@ For detailed information, see the `agents/` directory:
 - **[agents/rules/](agents/rules/)** - Modular engineering rules
 - **[agents/commands.md](agents/commands.md)** - Complete command reference
 - **[agents/knowledge-base.md](agents/knowledge-base.md)** - Domain knowledge and business rules
+
+## Cloud-specific instructions
+
+### Services
+
+| Service | How to start | Port |
+|---------|-------------|------|
+| PostgreSQL | `docker compose up -d` in `packages/prisma/` | 5450 |
+| MailHog | `docker compose up -d` in `packages/emails/` | SMTP: 1025, Web: 8025 |
+| Web app | `yarn dev` (from repo root) | 3000 |
+
+### Starting the dev environment
+
+1. Start Docker: `sudo dockerd &>/tmp/dockerd.log &` (wait ~3s for it to be ready)
+2. Start PostgreSQL: `cd packages/prisma && docker compose up -d`
+3. Start MailHog: `cd packages/emails && docker compose up -d`
+4. Start the web app: `yarn dev` (runs on port 3000)
+
+The `calendso` database must exist in PostgreSQL. The Docker Compose file creates `cal-saml` by default, so you may need to create `calendso` manually: `psql -h localhost -p 5450 -U postgres -c "CREATE DATABASE calendso;"`
+
+### Seeded test users
+
+Login at `http://localhost:3000/auth/login`. Key seeded accounts (password = username):
+
+- `pro@example.com` / `pro` — Pro user with multiple event types
+- `free@example.com` / `free` — Free user
+- `admin@example.com` / `admin` — Admin user (if seeded)
+
+### Commands reference
+
+See [agents/commands.md](agents/commands.md) for the full list. Key commands:
+
+- **Lint**: `yarn biome check --write .`
+- **Type check**: `yarn type-check:ci --force`
+- **Unit tests**: `TZ=UTC yarn test`
+- **Dev server**: `yarn dev`
+
+### Gotchas
+
+- The Docker daemon must be running before starting PostgreSQL/MailHog containers. In cloud VMs, Docker requires `fuse-overlayfs` storage driver and `iptables-legacy` (configured in `/etc/docker/daemon.json`).
+- After `yarn install`, the `postinstall` script runs `husky install` and turbo `post-install` tasks including Prisma client generation. If you see missing Prisma types, run `yarn prisma generate`.
+- The `.env` file requires `NEXTAUTH_SECRET` and `CALENDSO_ENCRYPTION_KEY` to be set (generate with `openssl rand -base64 32` and `openssl rand -base64 24` respectively). Without these, the app will fail at runtime.
+- Unit tests with 2 pre-existing failures in `RerouteDialog.test.tsx` related to `NEXT_PUBLIC_WEBAPP_URL` being `localhost:3000` vs `cal.com` — these are not caused by your changes.
