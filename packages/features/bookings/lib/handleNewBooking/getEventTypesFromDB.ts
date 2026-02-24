@@ -86,6 +86,7 @@ const getEventTypesFromDBSelect = {
   bookingLimits: true,
   durationLimits: true,
   rescheduleWithSameRoundRobinHost: true,
+  roundRobinRescheduleAction: true,
   assignAllTeamMembers: true,
   isRRWeightsEnabled: true,
   beforeEventBuffer: true,

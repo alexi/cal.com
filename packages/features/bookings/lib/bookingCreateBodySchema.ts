@@ -10,6 +10,7 @@ export const bookingCreateBodySchema = z.object({
   eventTypeId: z.number(),
   eventTypeSlug: z.string().optional(),
   rescheduleUid: z.string().optional(),
+  rescheduleWithSameHost: z.boolean().optional(),
   recurringEventId: z.string().optional(),
   rescheduledBy: z.string().email({ message: "Invalid email" }).optional(),
   start: z.string(),

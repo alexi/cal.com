@@ -197,6 +197,9 @@ const BaseEventTypeUpdateInput: z.ZodType<TUpdateInputSchema> = z
     customReplyToEmail: z.string().nullable().optional(),
     eventTypeColor: eventTypeColor.nullable().optional(),
     rescheduleWithSameRoundRobinHost: z.boolean().optional(),
+    roundRobinRescheduleAction: z
+      .enum(["RESCHEDULE_WITH_ANY_HOST", "RESCHEDULE_WITH_SAME_HOST", "ATTENDEE_DECIDES"])
+      .optional(),
     secondaryEmailId: z.number().int().nullable().optional(),
     useBookerTimezone: z.boolean().optional(),
     restrictionScheduleId: z.number().int().nullable().optional(),

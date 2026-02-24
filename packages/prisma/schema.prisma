@@ -269,7 +269,8 @@ model EventType {
 
   /// @zod.import(["import { eventTypeColor } from '../../zod-utils'"]).custom.use(eventTypeColor)
   eventTypeColor                   Json?
-  rescheduleWithSameRoundRobinHost Boolean @default(false)
+  rescheduleWithSameRoundRobinHost Boolean                       @default(false)
+  roundRobinRescheduleAction       RoundRobinRescheduleAction     @default(RESCHEDULE_WITH_ANY_HOST)
 
   secondaryEmailId Int?
   secondaryEmail   SecondaryEmail? @relation(fields: [secondaryEmailId], references: [id], onDelete: Cascade)
@@ -1798,6 +1799,12 @@ enum RRResetInterval {
 enum RRTimestampBasis {
   CREATED_AT
   START_TIME
+}
+
+enum RoundRobinRescheduleAction {
+  RESCHEDULE_WITH_ANY_HOST
+  RESCHEDULE_WITH_SAME_HOST
+  ATTENDEE_DECIDES
 }
 
 model SelectedSlots {

@@ -616,9 +616,18 @@ export class UpdateTeamEventTypeInput_2024_06_14 extends BaseUpdateEventTypeInpu
   @IsBoolean()
   @IsOptional()
   @DocsPropertyOptional({
-    description: "Rescheduled events will be assigned to the same host as initially scheduled.",
+    description:
+      "Deprecated: Use roundRobinRescheduleAction instead. Rescheduled events will be assigned to the same host as initially scheduled.",
   })
   rescheduleWithSameRoundRobinHost?: boolean;
+
+  @IsOptional()
+  @DocsPropertyOptional({
+    description:
+      "Controls rescheduling behavior for round-robin events. RESCHEDULE_WITH_ANY_HOST: attendee gets rematched via round-robin. RESCHEDULE_WITH_SAME_HOST: attendee keeps the same host. ATTENDEE_DECIDES: attendee chooses at reschedule time.",
+    enum: ["RESCHEDULE_WITH_ANY_HOST", "RESCHEDULE_WITH_SAME_HOST", "ATTENDEE_DECIDES"],
+  })
+  roundRobinRescheduleAction?: "RESCHEDULE_WITH_ANY_HOST" | "RESCHEDULE_WITH_SAME_HOST" | "ATTENDEE_DECIDES";
 
   @IsBoolean()
   @IsOptional()

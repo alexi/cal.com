@@ -7,6 +7,7 @@ import {
 import type { EventType } from "@calcom/features/users/lib/getRoutedUsers";
 import { withReporting } from "@calcom/lib/sentryWrapper";
 import type { SelectedCalendar } from "@calcom/prisma/client";
+import type { RoundRobinRescheduleAction } from "@calcom/prisma/enums";
 import { SchedulingType } from "@calcom/prisma/enums";
 import type { CredentialForCalendarService, CredentialPayload } from "@calcom/types/Credential";
 
@@ -89,6 +90,7 @@ export class QualifiedHostsService {
     contactOwnerEmail,
     routingFormResponse,
     rrHostSubsetIds,
+    attendeeRescheduleWithSameHost,
   }: {
     eventType: {
       id: number;
@@ -98,6 +100,7 @@ export class QualifiedHostsService {
       schedulingType: SchedulingType | null;
       isRRWeightsEnabled: boolean;
       rescheduleWithSameRoundRobinHost: boolean;
+      roundRobinRescheduleAction: RoundRobinRescheduleAction;
       includeNoShowInRRCalculation: boolean;
       rrHostSubsetEnabled?: boolean;
     } & EventType;
@@ -106,6 +109,7 @@ export class QualifiedHostsService {
     contactOwnerEmail: string | null;
     routingFormResponse: RoutingFormResponse | null;
     rrHostSubsetIds?: number[];
+    attendeeRescheduleWithSameHost?: boolean | null;
   }): Promise<{
     qualifiedRRHosts: {
       isFixed: boolean;
@@ -154,13 +158,19 @@ export class QualifiedHostsService {
       })
     );
 
-    // If it is rerouting, we should not force reschedule with same host.
+    const resolvedRescheduleWithSameHost =
+      this.dependencies.filterHostsService.resolveRescheduleWithSameHost({
+        roundRobinRescheduleAction: eventType.roundRobinRescheduleAction,
+        rescheduleWithSameRoundRobinHost: eventType.rescheduleWithSameRoundRobinHost,
+        attendeeRescheduleWithSameHost,
+      });
+
     const hostsAfterRescheduleWithSameRoundRobinHost = applyFilterWithFallback(
       roundRobinHosts,
       await this.dependencies.filterHostsService.filterHostsBySameRoundRobinHost({
         hosts: roundRobinHosts,
         rescheduleUid,
-        rescheduleWithSameRoundRobinHost: eventType.rescheduleWithSameRoundRobinHost,
+        rescheduleWithSameRoundRobinHost: resolvedRescheduleWithSameHost,
         routedTeamMemberIds,
       })
     );
