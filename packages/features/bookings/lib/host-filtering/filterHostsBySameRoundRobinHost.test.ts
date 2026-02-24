@@ -2,6 +2,7 @@ import type { Mock } from "vitest";
 import { describe, expect, it, vi, afterEach } from "vitest";
 
 import type { BookingRepository } from "@calcom/features/bookings/repositories/BookingRepository";
+import type { RoundRobinRescheduleAction } from "@calcom/prisma/enums";
 
 import { FilterHostsService } from "./filterHostsBySameRoundRobinHost";
 
@@ -121,6 +122,55 @@ describe("FilterHostsService", () => {
       // Should return only organizer host
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(expect.objectContaining({ user: { id: 1, email: "host1@acme.com" } }));
+    });
+  });
+
+  describe("resolveRescheduleWithSameHost", () => {
+    it("returns true for RESCHEDULE_WITH_SAME_HOST", () => {
+      expect(
+        filterHostsService.resolveRescheduleWithSameHost({
+          roundRobinRescheduleAction: "RESCHEDULE_WITH_SAME_HOST" as RoundRobinRescheduleAction,
+          rescheduleWithSameRoundRobinHost: false,
+        })
+      ).toBe(true);
+    });
+
+    it("returns false for RESCHEDULE_WITH_ANY_HOST", () => {
+      expect(
+        filterHostsService.resolveRescheduleWithSameHost({
+          roundRobinRescheduleAction: "RESCHEDULE_WITH_ANY_HOST" as RoundRobinRescheduleAction,
+          rescheduleWithSameRoundRobinHost: true,
+        })
+      ).toBe(false);
+    });
+
+    it("returns attendee choice when ATTENDEE_DECIDES and attendee chose same host", () => {
+      expect(
+        filterHostsService.resolveRescheduleWithSameHost({
+          roundRobinRescheduleAction: "ATTENDEE_DECIDES" as RoundRobinRescheduleAction,
+          rescheduleWithSameRoundRobinHost: false,
+          attendeeRescheduleWithSameHost: true,
+        })
+      ).toBe(true);
+    });
+
+    it("returns false when ATTENDEE_DECIDES and attendee chose any host", () => {
+      expect(
+        filterHostsService.resolveRescheduleWithSameHost({
+          roundRobinRescheduleAction: "ATTENDEE_DECIDES" as RoundRobinRescheduleAction,
+          rescheduleWithSameRoundRobinHost: true,
+          attendeeRescheduleWithSameHost: false,
+        })
+      ).toBe(false);
+    });
+
+    it("defaults to false when ATTENDEE_DECIDES and no attendee choice provided", () => {
+      expect(
+        filterHostsService.resolveRescheduleWithSameHost({
+          roundRobinRescheduleAction: "ATTENDEE_DECIDES" as RoundRobinRescheduleAction,
+          rescheduleWithSameRoundRobinHost: true,
+        })
+      ).toBe(false);
     });
   });
 });

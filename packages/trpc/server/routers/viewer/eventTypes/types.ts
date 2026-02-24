@@ -197,6 +197,9 @@ const BaseEventTypeUpdateInput: z.ZodType<TUpdateInputSchema> = z
     customReplyToEmail: z.string().nullable().optional(),
     eventTypeColor: eventTypeColor.nullable().optional(),
     rescheduleWithSameRoundRobinHost: z.boolean().optional(),
+    roundRobinRescheduleAction: z
+      .enum(["RESCHEDULE_WITH_ANY_HOST", "RESCHEDULE_WITH_SAME_HOST", "ATTENDEE_DECIDES"])
+      .optional(),
     secondaryEmailId: z.number().int().nullable().optional(),
     useBookerTimezone: z.boolean().optional(),
     restrictionScheduleId: z.number().int().nullable().optional(),
@@ -230,5 +233,9 @@ export const ZUpdateInputSchema = BaseEventTypeUpdateInput.superRefine((data, _c
     data.aiPhoneCallConfig.guestName = data.aiPhoneCallConfig.guestName ?? undefined;
     data.aiPhoneCallConfig.guestEmail = data.aiPhoneCallConfig.guestEmail ?? null;
     data.aiPhoneCallConfig.guestCompany = data.aiPhoneCallConfig.guestCompany ?? null;
+  }
+  if (data.roundRobinRescheduleAction) {
+    data.rescheduleWithSameRoundRobinHost =
+      data.roundRobinRescheduleAction === "RESCHEDULE_WITH_SAME_HOST";
   }
 });

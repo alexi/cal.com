@@ -1,43 +1,28 @@
-import { useState, Suspense, useMemo, useEffect } from "react";
-import type { Dispatch, SetStateAction } from "react";
-import { Controller, useFormContext } from "react-hook-form";
-import type { z } from "zod";
-
 import { getPaymentAppData } from "@calcom/app-store/_utils/payments/getPaymentAppData";
 import { useAtomsContext } from "@calcom/atoms/hooks/useAtomsContext";
 import { useIsPlatform } from "@calcom/atoms/hooks/useIsPlatform";
-import {
-  SelectedCalendarsSettingsWebWrapper,
-  SelectedCalendarSettingsScope,
-  SelectedCalendarsSettingsWebWrapperSkeleton,
-} from "@calcom/web/modules/calendars/components/SelectedCalendarsSettingsWebWrapper";
 import { Timezone as PlatformTimzoneSelect } from "@calcom/atoms/timezone";
 import getLocationsOptionsForSelect from "@calcom/features/bookings/lib/getLocationOptionsForSelect";
 import DestinationCalendarSelector from "@calcom/features/calendars/components/DestinationCalendarSelector";
-import { TimezoneSelect as WebTimezoneSelect } from "@calcom/web/modules/timezone/components/TimezoneSelect";
 import useLockedFieldsManager from "@calcom/features/ee/managed-event-types/hooks/useLockedFieldsManager";
 import {
   allowDisablingAttendeeConfirmationEmails,
   allowDisablingHostConfirmationEmails,
 } from "@calcom/features/ee/workflows/lib/allowDisablingStandardEmails";
-import { MultiplePrivateLinksController } from "@calcom/web/modules/event-types/components";
-import AddVerifiedEmail from "@calcom/web/modules/event-types/components/AddVerifiedEmail";
 import { LearnMoreLink } from "@calcom/features/eventtypes/components/LearnMoreLink";
 import type { EventNameObjectType } from "@calcom/features/eventtypes/lib/eventNaming";
 import { getEventName } from "@calcom/features/eventtypes/lib/eventNaming";
 import type {
-  FormValues,
-  EventTypeSetupProps,
-  SelectClassNames,
   CheckboxClassNames,
+  EventTypeSetupProps,
+  FormValues,
   InputClassNames,
+  SelectClassNames,
   SettingsToggleClassNames,
 } from "@calcom/features/eventtypes/lib/types";
-import { FormBuilder } from "./FormBuilder";
-import { BookerLayoutSelector } from "@calcom/web/modules/settings/components/BookerLayoutSelector";
 import {
-  DEFAULT_LIGHT_BRAND_COLOR,
   DEFAULT_DARK_BRAND_COLOR,
+  DEFAULT_LIGHT_BRAND_COLOR,
   MAX_SEATS_PER_TIME_SLOT,
 } from "@calcom/lib/constants";
 import { generateHashedLink } from "@calcom/lib/generateHashedLink";
@@ -46,31 +31,44 @@ import { extractHostTimezone } from "@calcom/lib/hashedLinksUtils";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import type { Prisma } from "@calcom/prisma/client";
 import { SchedulingType } from "@calcom/prisma/enums";
-import type { EditableSchema } from "@calcom/prisma/zod-utils";
-import type { fieldSchema } from "@calcom/prisma/zod-utils";
+import type { EditableSchema, fieldSchema } from "@calcom/prisma/zod-utils";
 import type { RouterOutputs } from "@calcom/trpc/react";
 import classNames from "@calcom/ui/classNames";
 import { Alert } from "@calcom/ui/components/alert";
 import { Badge } from "@calcom/ui/components/badge";
 import { Button } from "@calcom/ui/components/button";
 import {
-  SelectField,
-  ColorPicker,
-  TextField,
-  Label,
   CheckboxField,
-  Switch,
-  SettingsToggle,
+  ColorPicker,
+  Label,
   Select,
+  SelectField,
+  SettingsToggle,
+  Switch,
+  TextField,
 } from "@calcom/ui/components/form";
+import { RadioAreaGroup as RadioArea } from "@calcom/ui/components/radio";
+import {
+  SelectedCalendarSettingsScope,
+  SelectedCalendarsSettingsWebWrapper,
+  SelectedCalendarsSettingsWebWrapperSkeleton,
+} from "@calcom/web/modules/calendars/components/SelectedCalendarsSettingsWebWrapper";
+import { MultiplePrivateLinksController } from "@calcom/web/modules/event-types/components";
+import AddVerifiedEmail from "@calcom/web/modules/event-types/components/AddVerifiedEmail";
+import { BookerLayoutSelector } from "@calcom/web/modules/settings/components/BookerLayoutSelector";
+import { TimezoneSelect as WebTimezoneSelect } from "@calcom/web/modules/timezone/components/TimezoneSelect";
 import { InfoIcon, PencilIcon } from "@coss/ui/icons";
-
+import type { Dispatch, SetStateAction } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import type { z } from "zod";
 import type { CustomEventTypeModalClassNames } from "./CustomEventTypeModal";
 import CustomEventTypeModal from "./CustomEventTypeModal";
 import type { EmailNotificationToggleCustomClassNames } from "./DisableAllEmailsSetting";
 import { DisableAllEmailsSetting } from "./DisableAllEmailsSetting";
 import type { DisableReschedulingCustomClassNames } from "./DisableReschedulingController";
 import DisableReschedulingController from "./DisableReschedulingController";
+import { FormBuilder } from "./FormBuilder";
 import type { RequiresConfirmationCustomClassNames } from "./RequiresConfirmationController";
 import RequiresConfirmationController from "./RequiresConfirmationController";
 
@@ -1480,21 +1478,44 @@ export const EventAdvancedTab = ({
       />
       {isRoundRobinEventType && (
         <Controller
-          name="rescheduleWithSameRoundRobinHost"
+          name="roundRobinRescheduleAction"
           render={({ field: { value, onChange } }) => (
-            <SettingsToggle
-              labelClassName={classNames("text-sm", customClassNames?.roundRobinReschedule?.label)}
-              toggleSwitchAtTheEnd={true}
-              switchContainerClassName={classNames(
+            <div
+              className={classNames(
                 "border-subtle rounded-lg border py-6 px-4 sm:px-6",
                 customClassNames?.roundRobinReschedule?.container
-              )}
-              title={t("reschedule_with_same_round_robin_host_title")}
-              description={t("reschedule_with_same_round_robin_host_description")}
-              descriptionClassName={customClassNames?.roundRobinReschedule?.description}
-              checked={value}
-              onCheckedChange={(e) => onChange(e)}
-            />
+              )}>
+              <div className="mb-4">
+                <h2
+                  className={classNames(
+                    "text-emphasis text-sm font-semibold leading-none",
+                    customClassNames?.roundRobinReschedule?.label
+                  )}>
+                  {t("round_robin_reschedule_action_title")}
+                </h2>
+                <p
+                  className={classNames(
+                    "text-default mt-2 text-sm leading-normal",
+                    customClassNames?.roundRobinReschedule?.description
+                  )}>
+                  {t("round_robin_reschedule_action_description")}
+                </p>
+              </div>
+              <RadioArea.Group value={value} onValueChange={onChange} className="space-y-2">
+                <RadioArea.Item value="RESCHEDULE_WITH_ANY_HOST">
+                  <span className="text-emphasis text-sm font-medium">{t("reschedule_with_any_host")}</span>
+                  <p className="text-default mt-0.5 text-sm">{t("reschedule_with_any_host_description")}</p>
+                </RadioArea.Item>
+                <RadioArea.Item value="RESCHEDULE_WITH_SAME_HOST">
+                  <span className="text-emphasis text-sm font-medium">{t("reschedule_with_same_host")}</span>
+                  <p className="text-default mt-0.5 text-sm">{t("reschedule_with_same_host_description")}</p>
+                </RadioArea.Item>
+                <RadioArea.Item value="ATTENDEE_DECIDES">
+                  <span className="text-emphasis text-sm font-medium">{t("attendee_decides")}</span>
+                  <p className="text-default mt-0.5 text-sm">{t("attendee_decides_description")}</p>
+                </RadioArea.Item>
+              </RadioArea.Group>
+            </div>
           )}
         />
       )}

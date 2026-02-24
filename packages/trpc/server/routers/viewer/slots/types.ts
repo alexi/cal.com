@@ -27,6 +27,7 @@ export const getScheduleSchemaObject = z.object({
     .optional()
     .transform((val) => val && parseInt(val)),
   rescheduleUid: z.string().nullish(),
+  rescheduleWithSameHost: z.boolean().nullish(),
   // whether to do team event or user event
   isTeamEvent: z.boolean().optional().default(false),
   orgSlug: z.string().nullish(),

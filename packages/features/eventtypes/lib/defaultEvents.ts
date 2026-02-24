@@ -126,6 +126,7 @@ const commons = {
   rrSegmentQueryValue: null,
   isRRWeightsEnabled: false,
   rescheduleWithSameRoundRobinHost: false,
+  roundRobinRescheduleAction: "RESCHEDULE_WITH_ANY_HOST" as const,
   useEventTypeDestinationCalendarEmail: false,
   secondaryEmailId: null,
   secondaryEmail: null,

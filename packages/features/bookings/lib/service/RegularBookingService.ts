@@ -923,6 +923,7 @@ async function handler(
     rescheduleUid: reqBody.rescheduleUid || null,
     routingFormResponse,
     rrHostSubsetIds: rrHostSubsetIds ?? undefined,
+    attendeeRescheduleWithSameHost: reqBody.rescheduleWithSameHost,
   });
 
   // We filter out users but ensure allHostUsers remain same.

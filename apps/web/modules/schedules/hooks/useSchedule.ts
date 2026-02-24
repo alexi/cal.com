@@ -68,6 +68,7 @@ export const useSchedule = ({
   bookerLayout,
 }: UseScheduleWithCacheArgs) => {
   const bookerState = useBookerStore((state) => state.state);
+  const rescheduleWithSameHost = useBookerStore((state) => state.rescheduleWithSameHost);
 
   const [startTime, endTime] = useTimesForSchedule({
     month,
@@ -108,6 +109,7 @@ export const useSchedule = ({
     timeZone: timezone ?? "PLACEHOLDER_TIMEZONE",
     duration: duration ? `${duration}` : undefined,
     rescheduleUid,
+    rescheduleWithSameHost,
     orgSlug,
     teamMemberEmail,
     routedTeamMemberIds,

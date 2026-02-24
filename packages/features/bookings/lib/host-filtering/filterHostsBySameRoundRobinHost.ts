@@ -1,5 +1,6 @@
 import type { BookingRepository } from "@calcom/features/bookings/repositories/BookingRepository";
 import { isRerouting } from "@calcom/lib/bookings/routing/utils";
+import type { RoundRobinRescheduleAction } from "@calcom/prisma/enums";
 
 export interface IFilterHostsService {
   bookingRepo: BookingRepository;
@@ -10,7 +11,7 @@ export class FilterHostsService {
 
   async filterHostsBySameRoundRobinHost<
     T extends {
-      isFixed: false; // ensure no fixed hosts are passed.
+      isFixed: false;
       user: { id: number; email: string };
     },
   >({
@@ -32,6 +33,15 @@ export class FilterHostsService {
       return hosts;
     }
 
+    return this._filterToOriginalHosts({ hosts, rescheduleUid });
+  }
+
+  private async _filterToOriginalHosts<
+    T extends {
+      isFixed: false;
+      user: { id: number; email: string };
+    },
+  >({ hosts, rescheduleUid }: { hosts: T[]; rescheduleUid: string }) {
     const originalRescheduledBooking =
       await this.dependencies.bookingRepo.findOriginalRescheduledBookingUserId({
         rescheduleUid,
@@ -48,5 +58,26 @@ export class FilterHostsService {
       const isAttendee = attendeeEmails.includes(host.user.email);
       return isOrganizer || isAttendee;
     });
+  }
+
+  resolveRescheduleWithSameHost({
+    roundRobinRescheduleAction,
+    rescheduleWithSameRoundRobinHost,
+    attendeeRescheduleWithSameHost,
+  }: {
+    roundRobinRescheduleAction: RoundRobinRescheduleAction;
+    rescheduleWithSameRoundRobinHost: boolean;
+    attendeeRescheduleWithSameHost?: boolean | null;
+  }): boolean {
+    switch (roundRobinRescheduleAction) {
+      case "RESCHEDULE_WITH_SAME_HOST":
+        return true;
+      case "RESCHEDULE_WITH_ANY_HOST":
+        return false;
+      case "ATTENDEE_DECIDES":
+        return attendeeRescheduleWithSameHost ?? false;
+      default:
+        return rescheduleWithSameRoundRobinHost;
+    }
   }
 }
