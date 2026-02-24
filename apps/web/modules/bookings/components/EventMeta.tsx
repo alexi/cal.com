@@ -1,7 +1,7 @@
 import { Timezone as PlatformTimezoneSelect } from "@calcom/atoms/timezone";
 import { useBookerStoreContext } from "@calcom/features/bookings/Booker/BookerStoreProvider";
-import { useBookerTime } from "@calcom/features/bookings/Booker/hooks/useBookerTime";
 import { fadeInUp } from "@calcom/features/bookings/Booker/config";
+import { useBookerTime } from "@calcom/features/bookings/Booker/hooks/useBookerTime";
 import type { Timezone } from "@calcom/features/bookings/Booker/types";
 import { FromToTime } from "@calcom/features/bookings/Booker/utils/dates";
 import { useTimePreferences } from "@calcom/features/bookings/lib";
@@ -209,10 +209,9 @@ export const EventMeta = ({
                 </span>
               </EventMetaBlock>
             )}
-            {rescheduleUid &&
-              event?.roundRobinRescheduleAction === "ATTENDEE_DECIDES" && (
-                <RescheduleHostPreference />
-              )}
+            {rescheduleUid && event?.roundRobinRescheduleAction === "ATTENDEE_DECIDES" && (
+              <RescheduleHostPreference />
+            )}
             {selectedTimeslot && (
               <EventMetaBlock icon="calendar">
                 <FromToTime
@@ -306,7 +305,10 @@ function RescheduleHostPreference() {
         <RadioArea.Item value="same" className="!rounded-lg !p-0">
           <span className="text-emphasis text-sm font-medium">{t("reschedule_keep_same_host")}</span>
           <p className="text-default mt-0.5 text-xs">
-            {t("reschedule_keep_same_host_description", { name: "" }).replace(/\(.*\)/, "(limited availability)")}
+            {t("reschedule_keep_same_host_description", { name: "" }).replace(
+              /\(.*\)/,
+              "(limited availability)"
+            )}
           </p>
         </RadioArea.Item>
       </RadioArea.Group>

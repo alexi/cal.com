@@ -1,16 +1,15 @@
 import type { RoutingFormResponse } from "@calcom/features/bookings/lib/getLuckyUser";
 import type { BookingRepository } from "@calcom/features/bookings/repositories/BookingRepository";
+import type { EventType } from "@calcom/features/users/lib/getRoutedUsers";
 import {
   findMatchingHostsWithEventSegment,
   getNormalizedHostsWithDelegationCredentials,
 } from "@calcom/features/users/lib/getRoutedUsers";
-import type { EventType } from "@calcom/features/users/lib/getRoutedUsers";
 import { withReporting } from "@calcom/lib/sentryWrapper";
 import type { SelectedCalendar } from "@calcom/prisma/client";
 import type { RoundRobinRescheduleAction } from "@calcom/prisma/enums";
 import { SchedulingType } from "@calcom/prisma/enums";
 import type { CredentialForCalendarService, CredentialPayload } from "@calcom/types/Credential";
-
 import { filterHostsByLeadThreshold } from "./filterHostsByLeadThreshold";
 import type { FilterHostsService } from "./filterHostsBySameRoundRobinHost";
 
@@ -158,12 +157,13 @@ export class QualifiedHostsService {
       })
     );
 
-    const resolvedRescheduleWithSameHost =
-      this.dependencies.filterHostsService.resolveRescheduleWithSameHost({
+    const resolvedRescheduleWithSameHost = this.dependencies.filterHostsService.resolveRescheduleWithSameHost(
+      {
         roundRobinRescheduleAction: eventType.roundRobinRescheduleAction,
         rescheduleWithSameRoundRobinHost: eventType.rescheduleWithSameRoundRobinHost,
         attendeeRescheduleWithSameHost,
-      });
+      }
+    );
 
     const hostsAfterRescheduleWithSameRoundRobinHost = applyFilterWithFallback(
       roundRobinHosts,
