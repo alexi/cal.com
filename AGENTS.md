@@ -281,7 +281,8 @@ See [agents/commands.md](agents/commands.md) for the full list. Key commands:
 
 ### Gotchas
 
-- The Docker daemon must be running before starting PostgreSQL/MailHog containers. In cloud VMs, Docker requires `fuse-overlayfs` storage driver and `iptables-legacy` (configured in `/etc/docker/daemon.json`).
+- The Docker daemon must be running before starting PostgreSQL/MailHog containers. In cloud VMs, Docker requires `fuse-overlayfs` storage driver and `iptables-legacy` (configured in `/etc/docker/daemon.json`). After starting `dockerd`, if `docker compose` fails with permission denied on `/var/run/docker.sock`, run `sudo chmod 666 /var/run/docker.sock` once per VM session (or use `sudo docker compose`).
+- `psql` is not required for migrations if you use `yarn workspace @calcom/prisma db-deploy`; the `calendso` database is created by migrations when Postgres is reachable on port 5450.
 - After `yarn install`, the `postinstall` script runs `husky install` and turbo `post-install` tasks including Prisma client generation. If you see missing Prisma types, run `yarn prisma generate`.
 - The `.env` file requires `NEXTAUTH_SECRET` and `CALENDSO_ENCRYPTION_KEY` to be set (generate with `openssl rand -base64 32` and `openssl rand -base64 24` respectively). Without these, the app will fail at runtime.
 - Unit tests with 2 pre-existing failures in `RerouteDialog.test.tsx` related to `NEXT_PUBLIC_WEBAPP_URL` being `localhost:3000` vs `cal.com` — these are not caused by your changes.
